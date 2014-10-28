@@ -52,6 +52,12 @@ class Qaw {
      *
      * @var string
      */
+    public $treatedFolder;    
+    
+    /**
+     *
+     * @var string
+     */
     public $recoveryFolder;    
     
     /**
@@ -125,8 +131,18 @@ class Qaw {
     function setRecoveryFolder($folder)
     {
         return (string) $this->recoveryFolder = (string) $this->rightPath . $folder;
-    }       
+    }
     
+    /**
+     * Set treated folder
+     * 
+     * @param  string $folder Folder to use
+     * @return string
+     */
+    function setTreatedFolder($folder)
+    {
+        return (string) $this->treatedFolder = (string) $this->rightPath . $folder;
+    }    
 
     /**
      * Set QrCode temporary path
@@ -185,37 +201,6 @@ class Qaw {
     }
     
     /**
-     * Apply the qurcode as watermark
-     * 
-     * @param integer $quality  Quality of the picture
-     * @param string  $position Position of the watermark
-     * 
-     * @return boolean
-     */
-    public function applyQrCodeAsWatermark($quality, $position)
-    {
-        if (!empty($this->files)) {
-            foreach ($this->files as $key => $val) {
-               
-                $currentImageFilename   =   $this->picturesFolder . '/' . $val['picture'];
-                $qrcode                 =   $this->picturesFolder . '/' . $val['qrcode']; 
-                $directoryToSaveTo      =   $this->doneFolder . '/' . $val['id'];
-                $savedPicture           =   $directoryToSaveTo . '/' . $val['qrcode'];                
-                
-                mkdir($directoryToSaveTo, 0777, true);
-                
-                $this->watImage->setImage(array('file' => $currentImageFilename, 'quality' => $quality)); // file to use and export quality
-                $this->watImage->setWatermark(array('file' => $qrcode, 'position' => $position)); // watermark to use and it's position
-                $this->watImage->applyWatermark();
-                if (!$this->watImage->generate($savedPicture)) {
-                    print_r($this->watImage->errors);
-                }            
-            }
-        }
-        return true;
-    }
-    
-    /**
      * Create the ini file
      * 
      * @return boolean
@@ -225,8 +210,7 @@ class Qaw {
         if (!empty($this->files)) {
             foreach ($this->files as $key => $val) {
                
-                $directoryToSaveTo      =   $this->doneFolder . '/' . $val['id'];
-                $iniFile                =   $directoryToSaveTo . '/' . $val['id'] . '.ini';
+                $iniFile                =   $this->picturesFolder . '/' . $val['id'] . '.ini';
                 
                 $extension              = str_replace('.', '', $this->outputFileExtension);
                 
@@ -242,62 +226,105 @@ class Qaw {
             }
         }
         return true;
-    }
+    }    
     
     /**
-     * Delete qrcode file
-     */
-    public function deleteQrCode() 
-    {
-        $result = true;
-         if (!empty($this->files)) {
-            foreach ($this->files as $key => $val) {
-                
-                $qrcodeFile = $this->picturesFolder . '/' . $val['qrcode'];
-                
-                if (file_exists($qrcodeFile)) {
-                    $result = (unlink($qrcodeFile)) ? true : false ;  
-                }
-            }
-        }
-        
-        return $result;
-    }
-    
-    /**
-     * Save current pictures
+     * Save original files to
+     * 
+     * @param  string  $folder Folder where to save files
      * 
      * @return boolean
      */
-    public function savePicturesToRecovery() 
+    public function saveCurrentFilesTo($folder) 
     {
         $result = true;
         
+        $newFolder = $folder . 'Folder';
+        $folderType = $this->{$newFolder};  
+        
         foreach ($this->files as $key => $val) {
             
-            if ($this->recoveryFolder !== "") {
-                $newFilePath             =   $this->recoveryFolder . '/' . $val['picture'];            
-                $newPictureName          =   str_replace($this->outputFileExtension, '_DONE_' . time() . $this->outputFileExtension , $newFilePath);
-                $currentImageFilename    =   $this->picturesFolder . '/' . $val['picture'];
+            if ($folderType !== "") {
+                $folderFilePath           =   $folderType . '/' . $val['id'];
+                
+                $newPictureFileName         =   $folderFilePath . '/' . $val['picture'];
+                $newQrCodeFileName          =   $folderFilePath . '/' . $val['qrcode'];
+                $newIniFileName             =   $folderFilePath . '/' . $val['id'] . '.ini';
+                
+                $currentImageFilename       =   $this->picturesFolder . '/' . $val['picture'];
+                $currentQrCodeFilename      =   $this->picturesFolder . '/' . $val['qrcode'];
+                $currentIniFilename         =   $this->picturesFolder . '/' . $val['id'] . '.ini';
 
-                if (!is_dir($this->recoveryFolder)) {
-                    mkdir($this->recoveryFolder, 0777, true);
-                }
-
-                $result = (rename($currentImageFilename, $newPictureName)) ? true : false;
+                (!is_dir($folderFilePath)) ? mkdir($folderFilePath, 0777, true) : '';
+                
+                echo var_dump($folderFilePath);
+                
+                copy($currentImageFilename, $newPictureFileName);
+                copy($currentQrCodeFilename, $newQrCodeFileName);
+                $result = (copy($currentIniFilename, $newIniFileName)) ? true : false;
             }
        }
        
        return $result;
+    }    
+    
+    /**
+     * Apply the qurcode as watermark
+     * 
+     * @param integer $quality  Quality of the picture
+     * @param string  $position Position of the watermark
+     * 
+     * @return boolean
+     */
+    public function applyQrCodeAsWatermark($quality, $position)
+    {
+        if (!empty($this->files)) {
+            foreach ($this->files as $key => $val) {
+               
+                $currentImageFilename   =   $this->picturesFolder . '/' . $val['picture'];
+                $qrcode                 =   $this->picturesFolder . '/' . $val['qrcode'];                
+                
+                $this->watImage->setImage(array('file' => $currentImageFilename, 'quality' => $quality)); // file to use and export quality
+                $this->watImage->setWatermark(array('file' => $qrcode, 'position' => $position)); // watermark to use and it's position
+                $this->watImage->applyWatermark();
+                if (!$this->watImage->generate($currentImageFilename)) {
+                    print_r($this->watImage->errors);
+                }            
+            }
+        }
+        return true;
     }
     
+    /**
+     * Move another directory to another
+     * 
+     * @param string $firstPath  First folder content
+     * @param string $secondPath Folder to move to
+     */
+    public function moveTo($firstPath, $secondPath)
+    {
+        $_olderFolder           = $firstPath . 'Folder';
+        $olderFolderType        = $this->{$_olderFolder};
+        
+        $_newFolder             = $secondPath . 'Folder';
+        $newFolderType          = $this->{$_newFolder};        
+        
+        $files      = scandir($this->picturesFolder);
+        $oldfolder  = $olderFolderType;
+        $newfolder  = $newFolderType;
+        foreach($files as $fname) {
+            if($fname != '.' && $fname != '..') {
+                rename($oldfolder.$fname, $newfolder.$fname);
+            }
+        }        
+    }
     
     /**
      * Delete original pictures
      * 
      * @return boolean
      */
-    public function deleteOriginalPictures() 
+    public function delete() 
     {
         $result = true;
         
