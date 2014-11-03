@@ -362,7 +362,7 @@ class Qaw {
             if (($var === '.') || ($var === '..') || (substr($var, -4, 1) !== '.')) {
                 unset($this->files[$key]);
             } else  {
-                $id = substr(md5(rand()),0,5);
+                $id = $this->generateRandomKey();
                 $values[] = array(
                     'id' => $id, 
                     'picture' => $this->files[$key], 
@@ -372,5 +372,17 @@ class Qaw {
         }
         $this->files = $values;
         return (array) $this->files;
+    }
+
+    /**
+     * Generate a random key
+     * https://gist.github.com/kcassam/03371e8c2e753d1cfb61
+     * @return string
+     */
+
+
+    private function generateRandomKey()
+    {
+        return substr(base_convert(sha1(uniqid(mt_rand(), true)), 16, 36), 0, 8);
     }
 }
