@@ -181,6 +181,8 @@ class Qaw {
      */
     public function createQrCode($url, $padding)
     {
+        $result = true;
+        
         if (!empty($this->files)) {
             foreach ($this->files as $key => $val) {
                
@@ -192,12 +194,12 @@ class Qaw {
                $this->qrCode->setSize($qrCodeSize);
                $this->qrCode->setPadding($padding);
                if (!$this->qrCode->save($this->picturesFolder . '/' . $val['qrcode'])) {
-                   return false;
+                   $result = false;
                }              
             }
         }
         
-        return true;
+        return $result;
     }
     
     /**
@@ -210,7 +212,7 @@ class Qaw {
         if (!empty($this->files)) {
             foreach ($this->files as $key => $val) {
                
-                $iniFile                =   $this->picturesFolder . '/' . $val['id'] . '.ini';
+                $iniFile                = $this->picturesFolder . '/' . $val['id'] . '.ini';
                 
                 $extension              = str_replace('.', '', $this->outputFileExtension);
                 
@@ -245,9 +247,10 @@ class Qaw {
         foreach ($this->files as $key => $val) {
             
             if ($folderType !== "") {
-                $folderFilePath           =   $folderType . '/' . $val['id'];
+                $folderFilePath             =   $folderType . '/' . $val['id'];
                 
                 $newPictureFileName         =   $folderFilePath . '/' . $val['picture'];
+                $_newPictureFileName        =   $folderFilePath . '/' . $val['id'] . $this->outputFileExtension;
                 $newQrCodeFileName          =   $folderFilePath . '/' . $val['qrcode'];
                 $newIniFileName             =   $folderFilePath . '/' . $val['id'] . '.ini';
                 
@@ -260,6 +263,7 @@ class Qaw {
                 echo var_dump($folderFilePath);
                 
                 copy($currentImageFilename, $newPictureFileName);
+                rename($newPictureFileName, $_newPictureFileName);
                 copy($currentQrCodeFilename, $newQrCodeFileName);
                 $result = (copy($currentIniFilename, $newIniFileName)) ? true : false;
             }
@@ -307,16 +311,21 @@ class Qaw {
         $olderFolderType        = $this->{$_olderFolder};
         
         $_newFolder             = $secondPath . 'Folder';
-        $newFolderType          = $this->{$_newFolder};        
+        $newFolderType          = $this->{$_newFolder}; 
         
-        $files      = scandir($this->picturesFolder);
-        $oldfolder  = $olderFolderType;
-        $newfolder  = $newFolderType;
+        $files      = scandir($this->recoveryFolder);
+        
+        $result     = true;
+        
         foreach($files as $fname) {
             if($fname != '.' && $fname != '..') {
-                rename($oldfolder.$fname, $newfolder.$fname);
+                if (!rename($olderFolderType . '/' . $fname, $newFolderType . '/' . $fname)) {
+                    $result = false;
+                }
             }
-        }        
+        }
+        
+        return $result;
     }
     
     /**
@@ -328,16 +337,31 @@ class Qaw {
     {
         $result = true;
         
+        //Delete recovery folder
+        if (is_dir($this->recoveryFolder)) {
+            $result = (rmdir($this->recoveryFolder)) ? true : false;
+        }
+        
+        //And then delete all folders in pictures directory
         foreach ($this->files as $key => $val) {
             
-            if ($this->recoveryFolder !== "") {
-                $currentImageFilename    =   $this->picturesFolder . '/' . $val['picture'];
+            $currentImageFilename   =   $this->picturesFolder . '/' . $val['picture'];
+            $iniFilename            =   $this->picturesFolder . '/' . $val['id'] . '.ini';
+            $qrCodeFilename         =   $this->picturesFolder . '/' . $val['qrcode'];
 
-                if (file_exists($currentImageFilename)) {
-                    $result = (unlink($currentImageFilename)) ? true : false;
-                }
+            if (file_exists($currentImageFilename)) {
+                $result = (unlink($currentImageFilename)) ? true : false;
             }
-       }
+            
+            if (file_exists($iniFilename)) {
+                $result = (unlink($iniFilename)) ? true : false;
+            }
+            
+            if (file_exists($qrCodeFilename)) {
+                $result = (unlink($qrCodeFilename)) ? true : false;
+            }             
+
+        }
        
        return $result;
     }    
@@ -364,9 +388,9 @@ class Qaw {
             } else  {
                 $id = $this->generateRandomKey();
                 $values[] = array(
-                    'id' => $id, 
-                    'picture' => $this->files[$key], 
-                    'qrcode' => $id . $this->outputFileExtension
+                    'id'        => $id, 
+                    'picture'   => $this->files[$key], 
+                    'qrcode'    => $id . '-qrcode' . $this->outputFileExtension
                 );                
             }
         }

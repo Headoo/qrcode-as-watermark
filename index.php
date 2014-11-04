@@ -6,14 +6,17 @@ require 'src/WatImage.php';
 require 'src/Qaw.php';
 
 
-$picturesFolder             = (string) (filter_input(INPUT_GET, 'mediaPath') === '') ? 'pictures' : filter_input(INPUT_GET, 'picturesFolder');
-$doneFolder                 = (string) (filter_input(INPUT_GET, 'mediaPath') === '') ? 'saved' : filter_input(INPUT_GET, 'doneFolder') ;
-$treatedFolder              = (string) (filter_input(INPUT_GET, 'mediaPath') === '') ? 'saved' : filter_input(INPUT_GET, 'treatedFolder') ;
-$recoveryFolder             = (string) (filter_input(INPUT_GET, 'mediaPath') === '') ? 'saved' : filter_input(INPUT_GET, 'recoveryFolder') ;
+$picturesFolder             = (string) (filter_input(INPUT_GET, 'picturesFolder')) ? filter_input(INPUT_GET, 'picturesFolder') : 'Headoo';
+$doneFolder                 = (string) (filter_input(INPUT_GET, 'doneFolder'))     ? filter_input(INPUT_GET, 'doneFolder')     : 'Dropbox/Headoo';
+$treatedFolder              = (string) (filter_input(INPUT_GET, 'treatedFolder'))  ? filter_input(INPUT_GET, 'treatedFolder')  : 'Headoo/print';
+$recoveryFolder             = (string) (filter_input(INPUT_GET, 'recoveryFolder')) ? filter_input(INPUT_GET, 'recoveryFolder') : 'Headoo/saved';
+$hardDrive                  = (string) (filter_input(INPUT_GET, 'hardDrive'))      ? filter_input(INPUT_GET, 'hardDrive')      : 'C';
+$url                        = (string) (filter_input(INPUT_GET, 'url'))            ? filter_input(INPUT_GET, 'url')            : 'https://headoo.com/qr/';
+
 
 $qaw                        = new src\Qaw();
 $qaw->rightPath             = __DIR__ . '/../../../../';
-$qaw->rightHardDrive        = 'C';
+$qaw->rightHardDrive        = $hardDrive;
 $qaw->qrCodeWidthRatio      = 33;
 $qaw->getHardDrive();
 $qaw->outputFileExtension   = '.jpg';
@@ -23,7 +26,7 @@ $qaw->setTreatedFolder($treatedFolder);
 $qaw->createNewFolder($doneFolder . '/DEALT');
 $qaw->setRecoveryFolder($recoveryFolder);
 $qaw->listDirectoryPicturesAndApplyId();
-$qaw->createQrCode($url = 'https://headoo.com/qr/', $padding = 10);
+$qaw->createQrCode($url, $padding = 10);
 $qaw->createIniFile();
 $qaw->saveCurrentFilesTo('recovery');
 $qaw->applyQrCodeAsWatermark(100, 'bottom right');
