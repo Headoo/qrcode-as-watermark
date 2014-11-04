@@ -26,7 +26,7 @@ $qaw->setTreatedFolder($treatedFolder);
 $qaw->createNewFolder($doneFolder . '/DEALT');
 $qaw->setRecoveryFolder($recoveryFolder);
 $qaw->listDirectoryPicturesAndApplyId();
-$qaw->createQrCode($url, $padding = 10);
+$qaw->createQrCode($url, $padding = 30);
 $qaw->createIniFile();
 $qaw->saveCurrentFilesTo('recovery');
 $qaw->applyQrCodeAsWatermark(100, 'bottom right');
