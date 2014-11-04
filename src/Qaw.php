@@ -108,7 +108,13 @@ class Qaw {
      */
     function setPicturesFolder($folder)
     {
-        return (string) $this->picturesFolder = (string) $this->rightPath . $folder;
+        $this->picturesFolder = (string) $this->rightPath . $folder;
+        
+        if (!is_dir($this->picturesFolder)) {
+            mkdir($this->picturesFolder, 0777, true);
+        }
+        
+        return true;
     }
 
     /**
@@ -119,7 +125,13 @@ class Qaw {
      */
     function setDoneFolder($folder)
     {
-        return (string) $this->doneFolder = (string) $this->rightPath . $folder;
+        $this->doneFolder = (string) $this->rightPath . $folder;
+        
+        if (!is_dir($this->doneFolder)) {
+            mkdir($this->doneFolder, 0777, true);
+        }
+        
+        return true;        
     }
     
     /**
@@ -130,7 +142,13 @@ class Qaw {
      */
     function setRecoveryFolder($folder)
     {
-        return (string) $this->recoveryFolder = (string) $this->rightPath . $folder;
+        $this->recoveryFolder = (string) $this->rightPath . $folder;
+        
+        if (!is_dir($this->recoveryFolder)) {
+            mkdir($this->recoveryFolder, 0777, true);
+        }
+        
+        return true;        
     }
     
     /**
@@ -141,7 +159,13 @@ class Qaw {
      */
     function setTreatedFolder($folder)
     {
-        return (string) $this->treatedFolder = (string) $this->rightPath . $folder;
+        $this->treatedFolder = (string) $this->rightPath . $folder;
+        
+        if (!is_dir($this->treatedFolder)) {
+            mkdir($this->treatedFolder, 0777, true);
+        }
+        
+        return true;         
     }    
 
     /**
