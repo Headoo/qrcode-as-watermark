@@ -36,7 +36,7 @@ If you want to help me improve this bundle, please make sure it conforms to the 
 Issues
 ------
 
-Bug reports and feature requests can be submitted on the [Github issues tracker](https://github.com/edouardkombo/qrcode-as-watermark/issues).
+Bug reports and feature requests can be submitted on the [Github issues tracker](https://github.com/Headoo/qrcode-as-watermark/issues).
 
-For further informations, contact me directly at edouard.kombo@gmail.com.
+For further informations, contact me directly at support@headoo.com
 
