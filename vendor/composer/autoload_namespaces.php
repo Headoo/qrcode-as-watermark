@@ -7,5 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Endroid' => array($vendorDir . '/endroid/qrcode/src'),
-    'EdouardKombo' => array('/src'),
+    'Headoo' => array('/src'),
 );
