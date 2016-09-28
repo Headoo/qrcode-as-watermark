@@ -2,7 +2,7 @@
     "name": "headoo/qrcode-as-watermark",
     "type": "bundle",
     "description": "Apply a qrcode as watermark on a picture.",
-    "keywords": ["Qrcode", "watermark", "Qrcode as watermark", "QrcodeAsWatermark", "qrcode-as-watermark", "Edouard Kombo"],
+    "keywords": ["Qrcode", "watermark", "Qrcode as watermark", "QrcodeAsWatermark", "qrcode-as-watermark", "Headoo"],
     "homepage": "https://github.com/headoo/QrcodeAsWatermark",
     "license": "MIT",
     "authors": [
