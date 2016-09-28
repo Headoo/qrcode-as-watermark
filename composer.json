@@ -1,15 +1,15 @@
 {
-    "name": "edouardkombo/qrcode-as-watermark",
+    "name": "headoo/qrcode-as-watermark",
     "type": "bundle",
     "description": "Apply a qrcode as watermark on a picture.",
     "keywords": ["Qrcode", "watermark", "Qrcode as watermark", "QrcodeAsWatermark", "qrcode-as-watermark", "Edouard Kombo"],
-    "homepage": "https://github.com/edouardkombo/QrcodeAsWatermark",
+    "homepage": "https://github.com/headoo/QrcodeAsWatermark",
     "license": "MIT",
     "authors": [
         {
-            "name": "Edouard Kombo",
-            "email": "edouard.kombo@gmail.com",
-            "homepage": "http://creativcoders.wordpress.com",
+            "name": "Ka",
+            "email": "ka@headoo.com",
+            "homepage": "https://headoo.com",
             "role": "Developer"
         }
     ], 
